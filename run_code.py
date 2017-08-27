@@ -3,7 +3,9 @@ import win32con
 import ImageGrab
 import ImageOps
 import os
+import sys
 import time
+import subprocess
 from numpy import *
 
 """
@@ -23,13 +25,14 @@ Play area =  x_pad+1, y_pad+1, x_pad+1653, y_pad+645
 
 # Choose your destination. options are 1,2,3,4 which are the options from left to right I.E. 1 is 5 min journey
 # Setting this to a number that is not 2, 3, will default to 1
-destination = 2
+destination = 3
 #########################
 # -----Settings End----- #
 ##########################
 
 # Globals
 # ------------------
+
 
 x_pad = -1
 y_pad = 237
@@ -43,7 +46,17 @@ def screenGrab():
 
 
 def main():
-    startGame()
+    p = subprocess.Popen('python hotkey_handler.py')
+    while True:
+        print "checking for stop signal"
+        poll = p.poll()
+        if poll is None:
+            print "bot still running"
+            startGame()
+            # time.sleep(7)
+        else:
+            print "Close bot signal received - closing bot"
+            exit()
 
 
 def leftClick():
@@ -51,6 +64,17 @@ def leftClick():
     time.sleep(.1)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
     print "Click."
+
+
+def doubleLeftClick():
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+    time.sleep(.1)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+    time.sleep(.1)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+    time.sleep(.1)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+    print "DoubleClick."
 
 
 def leftDown():
@@ -97,45 +121,48 @@ class Cord:
 def startGame():
     # click top train
     mousePos(Cord.s_train1)
-    leftClick()
+    doubleLeftClick()
     time.sleep(.1)
 
     # click second train
     mousePos(Cord.s_train2)
-    leftClick()
+    doubleLeftClick()
     time.sleep(.1)
 
     # click third train
     mousePos(Cord.s_train3)
-    leftClick()
+    doubleLeftClick()
     time.sleep(.1)
 
     # click fourth train
     mousePos(Cord.s_train4)
-    leftClick()
+    doubleLeftClick()
     time.sleep(.1)
 
-    if destination is 2:
-        # s2 destination
-        mousePos(Cord.s2)
-        leftClick()
-        time.sleep(.1)
-    if destination is 3:
-        # s3 destination
-        mousePos(Cord.s3)
-        leftClick()
-        time.sleep(.1)
-    if destination is 4:
-        # s4 destination
-        mousePos(Cord.s4)
-        leftClick()
-        time.sleep(.1)
+    if (destination is 2 or
+            destination is 3 or
+            destination is 4):
+        if destination is 2:
+            # s2 destination
+            mousePos(Cord.s2)
+            time.sleep(.5)
+            leftClick()
+            time.sleep(.1)
+        if destination is 3:
+            # s3 destination
+            mousePos(Cord.s3)
+            leftClick()
+            time.sleep(.1)
+        if destination is 4:
+            # s4 destination
+            mousePos(Cord.s4)
+            leftClick()
+            time.sleep(.1)
     else:
         # s1 destination
         mousePos(Cord.s1)
         leftClick()
         time.sleep(.1)
-
 
 if __name__ == '__main__':
     main()
